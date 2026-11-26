@@ -71,11 +71,16 @@ Script sẽ:
 Tuỳ chọn:
 
 ```bash
-./desktop/install.sh --no-sddm        # không đụng vào SDDM, không cần sudo
+./desktop/install.sh --no-sddm        # không đụng vào theme/cấu hình SDDM
 ./desktop/install.sh --no-app         # chỉ cài dotfiles
+./desktop/install.sh --no-app --no-sddm  # chỉ dotfiles, không cần sudo
 ./desktop/install.sh --no-systemd     # không bật service user
 ./desktop/install.sh --keep-settings  # giữ settings.json hiện có
 ```
+
+> `--no-sddm` chỉ bỏ phần copy theme/cấu hình vào `/etc` và `/usr/share`.
+> Nếu vẫn để cài ứng dụng, `install/install.sh` có thể hỏi sudo để cài helper.
+> Dùng thêm `--no-app` nếu muốn hoàn toàn không cần sudo.
 
 Cấu hình cũ được giữ tại `*.bak-YYYYMMDD-HHMMSS` cạnh file gốc.
 
@@ -111,6 +116,7 @@ Xem đầy đủ trong `config/hypr/config/keybinds.lua`.
 
 - **Bố cục màn hình** trong bản gốc là laptop + màn hình ngoài. File `config/hypr/config/monitors.lua` để trống để Hyprland tự nhận; hãy chỉnh lại theo máy bạn.
 - **Touchpad gesture** phụ thuộc `libinput-gestures` và phần cứng touchpad. Nếu không có touchpad, có thể bỏ qua.
+- **Phím phụ chuột** (`mousekey.py`) cần quyền ghi `/dev/uinput`. Nếu không dùng chuột có nút phụ, bỏ 2 bind `mouse:276`/`mouse:275` trong `config/hypr/config/keybinds.lua`.
 - **Theme video** có thể đứng 2–3 giây lần đầu khi greeter giải mã frame; đây là hạn chế đã biết. Dùng theme ảnh nếu cần mở tức thì.
 - **`Super + L`** dùng `SwitchToGreeter` của SDDM. Phiên cũ vẫn chạy nền, nhưng đăng nhập lại có thể mở phiên mới. Muốn quay lại đúng tab cũ, dùng `Super + Shift + L`.
 - **Không có Face ID / vân tay** trong bộ này. Vân tay chỉ hoạt động nếu máy có phần cứng và `fprintd`.

@@ -1,0 +1,67 @@
+#!/bin/bash
+# Xem trước theme SDDM full màn hình (greeter Qt6 native Wayland).
+set -u
+
+theme="${1:-}"
+[[ "$theme" =~ ^[A-Za-z0-9._-]+$ ]] || exit 2
+[[ -d "/usr/share/sddm/themes/$theme" && -f "/usr/share/sddm/themes/$theme/Main.qml" ]] || exit 3
+
+rundir="${XDG_RUNTIME_DIR:-/tmp}"
+pidfile="$rundir/sddm-preview.pid"
+logfile="$rundir/sddm-preview-greeter.log"
+
+# đóng bản xem trước cũ nếu còn
+if [ -f "$pidfile" ]; then
+    read -r old_greeter < "$pidfile" || true
+    [ -n "${old_greeter:-}" ] && kill "$old_greeter" 2>/dev/null || true
+    rm -f "$pidfile"
+fi
+
+# dọn tiến trình preview còn sót nếu lần trước bị kill cứng
+pkill -f 'sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/' 2>/dev/null || true
+
+# đóng Cài đặt nếu vẫn còn mở (idempotent, khác với "toggle")
+if command -v serpantinum >/dev/null 2>&1; then
+    serpantinum ipc call guide dismiss >/dev/null 2>&1 || true
+    sleep 0.3
+fi
+
+QT_QPA_PLATFORM=wayland \
+    sddm-greeter-qt6 --test-mode --theme "/usr/share/sddm/themes/$theme" \
+    >"$logfile" 2>&1 &
+gpid=$!
+
+if command -v serpantinum >/dev/null 2>&1; then
+    serpantinum ipc call sddm-preview open "$theme" >/dev/null 2>&1 || true
+fi
+
+echo "$gpid" > "$pidfile"
+
+cleanup() {
+    kill "$gpid" 2>/dev/null || true
+    rm -f "$pidfile"
+    if command -v serpantinum >/dev/null 2>&1; then
+        serpantinum ipc call sddm-preview close >/dev/null 2>&1 || true
+    fi
+}
+trap cleanup EXIT INT TERM
+
+start_ts=$(date +%s)
+wait "$gpid"
+rc=$?
+elapsed=$(( $(date +%s) - start_ts ))
+
+# Chỉ báo lỗi nếu greeter thoát ngay (theme lỗi). Nếu cửa sổ đã mở
+# được một lúc rồi người dùng đóng bằng Super+Q thì coi như thành công.
+if [ "$rc" -ne 0 ] && [ "$elapsed" -lt 3 ]; then
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send -a "Serpantinum" -i "dialog-error" \
+            "Không xem trước được theme $theme" \
+            "Xem log: $logfile"
+    fi
+fi
+
+# mở lại trang Cài đặt sau khi đóng cửa sổ xem trước
+if command -v serpantinum >/dev/null 2>&1; then
+    (sleep 0.4; serpantinum msg toggle guide display_login) >/dev/null 2>&1 &
+fi

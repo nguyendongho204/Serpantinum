@@ -1,0 +1,38 @@
+#!/bin/bash
+# Xóa một theme SDDM (chạy bằng quyền root)
+set -euo pipefail
+
+theme="${1:-}"
+[[ "$theme" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "invalid theme name" >&2; exit 2; }
+[[ "$theme" != "." && "$theme" != ".." && "$theme" != "qylock" ]] || { echo "theme cannot be deleted" >&2; exit 3; }
+
+base="/usr/share/sddm/themes"
+path="$base/$theme"
+[[ -e "$path" || -L "$path" ]] || { echo "theme not found: $theme" >&2; exit 4; }
+
+# không xóa theme đang dùng
+current=""
+for f in /etc/sddm.conf /etc/sddm.conf.d/*.conf; do
+    [ -f "$f" ] || continue
+    v=$(grep -h '^Current=' "$f" 2>/dev/null | tail -1 | cut -d= -f2- || true)
+    [ -n "$v" ] && current="$v"
+done
+if [ "$theme" = "$current" ]; then
+    echo "cannot delete the current theme" >&2
+    exit 5
+fi
+
+# symlink của Qylock: chỉ xóa liên kết, giữ bộ Qylock gốc
+if [ -L "$path" ]; then
+    rm -f -- "$path"
+else
+    # thư mục thật: đảm bảo không đi ra ngoài /usr/share/sddm/themes
+    resolved="$(realpath -m "$path")"
+    if [ "$resolved" != "$path" ]; then
+        echo "invalid theme path" >&2
+        exit 2
+    fi
+    rm -rf -- "$path"
+fi
+
+echo "$theme"

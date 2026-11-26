@@ -1,0 +1,12 @@
+#!/bin/bash
+# Chuyển sang màn hình đăng nhập SDDM, giữ phiên hiện tại chạy nền.
+if ! busctl call org.freedesktop.DisplayManager \
+    /org/freedesktop/DisplayManager/Seat0 \
+    org.freedesktop.DisplayManager.Seat SwitchToGreeter >/dev/null 2>&1; then
+    if command -v notify-send >/dev/null 2>&1; then
+        notify-send -a "Serpantinum" -i "dialog-error" \
+            "Không mở được màn hình đăng nhập" \
+            "SDDM không phản hồi; dùng màn hình khoá thay thế."
+    fi
+    exec serpantinum lock
+fi

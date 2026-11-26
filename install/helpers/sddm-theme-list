@@ -1,0 +1,262 @@
+#!/usr/bin/env python3
+"""Liệt kê các theme SDDM đã cài, kèm ảnh xem trước (video -> JPEG)."""
+import configparser
+import glob
+import json
+import os
+import re
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+
+THEMES_DIR = "/usr/share/sddm/themes"
+CACHE_DIR = os.path.expanduser("~/.cache/serpantinum/sddm-themes")
+os.makedirs(CACHE_DIR, exist_ok=True)
+
+
+def read_conf(path):
+    cp = configparser.ConfigParser(interpolation=None, strict=False)
+    try:
+        cp.read(path, encoding="utf-8")
+    except Exception:
+        pass
+    return cp
+
+
+def effective_current():
+    current = None
+    files = ["/etc/sddm.conf"] + sorted(glob.glob("/etc/sddm.conf.d/*.conf"))
+    for f in files:
+        cp = read_conf(f)
+        if cp.has_option("Theme", "Current"):
+            current = cp.get("Theme", "Current").strip()
+    return current
+
+
+def metadata(path):
+    name = comment = ""
+    md = os.path.join(path, "metadata.desktop")
+    if os.path.exists(md):
+        cp = read_conf(md)
+        for section in ("Desktop Entry", "SddmGreeterTheme"):
+            if cp.has_option(section, "Name") and not name:
+                name = cp.get(section, "Name").strip()
+            if cp.has_option(section, "Comment") and not comment:
+                comment = cp.get(section, "Comment").strip()
+            if cp.has_option(section, "Description") and not comment:
+                comment = cp.get(section, "Description").strip()
+    return name, comment
+
+
+VALIDATION_FILE = os.path.join(CACHE_DIR, "validation.json")
+def load_validation():
+    try:
+        with open(VALIDATION_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def save_validation(cache):
+    try:
+        tmp = VALIDATION_FILE + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(cache, f, ensure_ascii=False)
+        os.replace(tmp, VALIDATION_FILE)
+    except Exception:
+        pass
+
+
+def theme_mtime(path):
+    stamps = []
+    for rel in ("Main.qml", "theme.conf", "metadata.desktop"):
+        f = os.path.join(path, rel)
+        try:
+            stamps.append(int(os.path.getmtime(f)))
+        except OSError:
+            pass
+    return max(stamps) if stamps else 0
+
+
+QMLFORMAT_QT6 = "/usr/lib/qt6/bin/qmlformat"
+
+
+def validate_theme(name, path):
+    """Kiểm tra cú pháp QML bằng qmlformat Qt6 (không dùng bản Qt5)."""
+    tool = QMLFORMAT_QT6 if os.path.exists(QMLFORMAT_QT6) else "qmlformat"
+    try:
+        proc = subprocess.run(
+            [tool, "-n", os.path.join(path, "Main.qml")],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+        )
+        return proc.returncode == 0
+    except Exception:
+        return True
+
+
+def prettify(name):
+    special = {
+        "material-you": "Material You",
+        "echo-sddm": "Echo SDDM",
+        "qylock": "Qylock",
+        "pixel-munchlax": "Pixel Munchlax",
+        "pixel-hollowknight": "Pixel Hollow Knight",
+        "elarun": "Elarun",
+        "maldives": "Maldives",
+        "maya": "Maya",
+    }
+    if name in special:
+        return special[name]
+    return re.sub(r"[-_]+", " ", name).title()
+
+
+def find_video(path):
+    exts = (".mp4", ".webm", ".mkv", ".mov")
+    for pat in ("bg.*", "background.*", "video.*", "*.mp4", "*.webm", "*.mkv", "*.mov"):
+        for h in sorted(glob.glob(os.path.join(path, pat))):
+            if os.path.splitext(h)[1].lower() in exts:
+                return h
+    for root, dirs, files in os.walk(path):
+        dirs.sort()
+        for fn in sorted(files):
+            if os.path.splitext(fn.lower())[1] in exts:
+                return os.path.join(root, fn)
+    return ""
+
+
+def find_image(path):
+    exts = (".png", ".jpg", ".jpeg", ".webp")
+    for pat in ("background.*", "bg.*", "preview.*", "screenshot.*", "wallpaper.*"):
+        hits = sorted(glob.glob(os.path.join(path, pat)))
+        for h in hits:
+            if os.path.splitext(h)[1].lower() in exts:
+                return h
+    # ưu tiên ảnh nền trong các thư mục con (qylock có nhiều bộ theme)
+    for root, dirs, files in os.walk(path):
+        dirs.sort()
+        for fn in sorted(files):
+            low = fn.lower()
+            if os.path.splitext(low)[1] in exts and (
+                low.startswith("bg") or low.startswith("background")
+            ):
+                return os.path.join(root, fn)
+    for ext in ("*.png", "*.jpg", "*.jpeg", "*.webp"):
+        hits = sorted(glob.glob(os.path.join(path, ext)))
+        if hits:
+            return hits[0]
+    for root, _dirs, files in os.walk(path):
+        for fn in sorted(files):
+            low = fn.lower()
+            if os.path.splitext(low)[1] in exts and "logo" not in low and "avatar" not in low:
+                return os.path.join(root, fn)
+    return ""
+
+
+def make_video_thumb(theme, src):
+    out = os.path.join(CACHE_DIR, theme + ".jpg")
+    try:
+        if os.path.exists(out) and os.path.getmtime(out) >= os.path.getmtime(src):
+            return out
+    except OSError:
+        pass
+    for seek in ("1", "0"):
+        subprocess.run(
+            [
+                "ffmpeg", "-y", "-v", "error", "-ss", seek, "-i", src,
+                "-frames:v", "1", "-vf", "scale=640:-2", "-q:v", "3", out,
+            ],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=25,
+        )
+        if os.path.exists(out) and os.path.getsize(out) > 0:
+            return out
+    return ""
+
+
+def main():
+    current = effective_current()
+    themes = []
+    if not os.path.isdir(THEMES_DIR):
+        print("[]")
+        return
+    entries = []
+    for name in sorted(os.listdir(THEMES_DIR)):
+        path = os.path.join(THEMES_DIR, name)
+        if not os.path.isdir(path):
+            continue
+        # chỉ nhận theme thật sự có Main.qml (bỏ qua thư mục qylock gốc)
+        if not os.path.exists(os.path.join(path, "Main.qml")):
+            continue
+        entries.append((name, path, theme_mtime(path)))
+
+    # kiểm tra QML cho theme mới/thay đổi (cache theo mtime)
+    cache = load_validation()
+    missing = [e for e in entries if cache.get(e[0], {}).get("mtime") != e[2]]
+    if missing:
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda e: validate_theme(e[0], e[1]), missing))
+        for (name, path, mt), ok in zip(missing, results):
+            cache[name] = {"mtime": mt, "valid": bool(ok)}
+        save_validation(cache)
+
+    for name, path, mt in entries:
+        cp = read_conf(os.path.join(path, "theme.conf"))
+        typ = cp.get("General", "type", fallback="image").strip().lower()
+        bg = cp.get("General", "background", fallback="").strip()
+        color = cp.get("General", "color", fallback="").strip()
+        font = cp.get("General", "font", fallback="").strip() or cp.get(
+            "General", "fontFamily", fallback=""
+        ).strip()
+        src = bg if os.path.isabs(bg) else os.path.join(path, bg) if bg else ""
+        preview = ""
+        if typ == "video" or (src and src.lower().endswith((".mp4", ".webm", ".mkv", ".mov"))):
+            if src and os.path.exists(src):
+                preview = make_video_thumb(name, src)
+        elif typ == "color":
+            preview = ""
+        elif src and os.path.exists(src):
+            preview = src
+
+        # nhiều theme qylock chỉ có bg.mp4 mà không khai báo background=
+        if not preview and typ != "color":
+            vid = find_video(path)
+            if vid:
+                preview = make_video_thumb(name, vid)
+                if preview:
+                    typ = "video"
+            if not preview:
+                preview = find_image(path)
+        meta_name, meta_comment = metadata(path)
+        if name.startswith("qylock-"):
+            base = name[len("qylock-"):]
+            title = "Qylock · " + prettify(base)
+            desc = meta_comment or "Qylock theme"
+        else:
+            title = prettify(name)
+            desc = meta_comment
+        valid = cache.get(name, {}).get("valid", True)
+        themes.append({
+            "name": name,
+            "valid": bool(valid),
+            "title": title,
+            "description": desc,
+            "type": typ,
+            "font": font,
+            "color": color if typ == "color" else "",
+            "preview": preview,
+            "current": name == current,
+            "symlink": os.path.islink(path),
+        })
+    # theme đang dùng lên đầu
+    themes.sort(key=lambda t: (not t["current"], t["title"].lower()))
+    print(json.dumps(themes, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:
+        print("[]")
+        print(str(exc), file=sys.stderr)

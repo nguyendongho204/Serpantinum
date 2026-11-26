@@ -1,0 +1,62 @@
+#!/bin/bash
+# Đặt theme SDDM hiện tại + tạo poster nền để giảm màn hình đen khi greeter khởi động.
+set -euo pipefail
+
+theme="${1:-}"
+[[ "$theme" =~ ^[A-Za-z0-9._-]+$ ]] || { echo "invalid theme name" >&2; exit 2; }
+[[ -d "/usr/share/sddm/themes/$theme" && -f "/usr/share/sddm/themes/$theme/Main.qml" ]] || { echo "theme not found: $theme" >&2; exit 3; }
+
+tmp="$(mktemp)"
+printf '[Theme]\nCurrent=%s\n' "$theme" > "$tmp"
+install -m 0644 "$tmp" /etc/sddm.conf.d/theme.conf
+rm -f "$tmp"
+
+theme_dir="/usr/share/sddm/themes/$theme"
+poster="/usr/share/sddm/themes/.sddm-poster.jpg"
+bg=""
+
+# background= trong theme.conf
+if [ -f "$theme_dir/theme.conf" ]; then
+    bg="$(grep -hE '^background=' "$theme_dir/theme.conf" 2>/dev/null | tail -1 | cut -d= -f2- || true)"
+fi
+if [ -n "$bg" ]; then
+    case "$bg" in
+        /*) ;;
+        *) bg="$theme_dir/$bg" ;;
+    esac
+fi
+if [ -z "$bg" ] || [ ! -e "$bg" ]; then
+    for f in bg.mp4 background.mp4 video.mp4 bg.webm bg.png bg.jpg bg.jpeg \
+             background.png background.jpg background.jpeg wallpaper.png wallpaper.jpg; do
+        if [ -e "$theme_dir/$f" ]; then
+            bg="$theme_dir/$f"
+            break
+        fi
+    done
+fi
+
+if [ -n "$bg" ] && [ -e "$bg" ]; then
+    case "$bg" in
+        *.mp4|*.webm|*.mkv|*.mov)
+            ffmpeg -y -v error -ss 1 -i "$bg" -frames:v 1 -q:v 2 "$poster" >/dev/null 2>&1 || true
+            ;;
+        *.png|*.jpg|*.jpeg|*.webp)
+            cp -f "$bg" "$poster"
+            ;;
+    esac
+fi
+
+# theme màu nền: tạo poster màu
+if [ ! -s "$poster" ] && [ -f "$theme_dir/theme.conf" ] && command -v convert >/dev/null 2>&1; then
+    color="$(grep -hE '^color=' "$theme_dir/theme.conf" 2>/dev/null | tail -1 | cut -d= -f2- || true)"
+    if [ -n "$color" ]; then
+        convert -size 1920x1200 "xc:$color" "$poster" >/dev/null 2>&1 || true
+    fi
+fi
+
+# cuối cùng vẫn không có poster: nền tối trung tính
+if [ ! -s "$poster" ] && command -v convert >/dev/null 2>&1; then
+    convert -size 1920x1200 xc:'#05080c' "$poster" >/dev/null 2>&1 || true
+fi
+
+echo "$theme"

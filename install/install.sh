@@ -2,7 +2,23 @@
 # Trình cài đặt Serpantinum (bản damournora)
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SOURCE_PATH="${BASH_SOURCE[0]:-}"
+if [ -n "$SOURCE_PATH" ] && [ -f "$SOURCE_PATH" ]; then
+    ROOT="$(cd "$(dirname "$(realpath "$SOURCE_PATH")")/.." && pwd)"
+else
+    ROOT=""
+fi
+
+# Khi chạy qua "curl | bash" hoặc file tạm, tải repo về cache.
+if [ -z "$ROOT" ] || [ ! -d "$ROOT/src" ]; then
+    command -v git >/dev/null 2>&1 || { echo "Cần git để tải Serpantinum." >&2; exit 1; }
+    CACHE="${XDG_CACHE_HOME:-$HOME/.cache}/serpantinum-installer"
+    rm -rf "$CACHE"
+    mkdir -p "$(dirname "$CACHE")"
+    git clone --depth 1 https://github.com/nguyendongho204/Serpantinum.git "$CACHE"
+    ROOT="$CACHE"
+fi
+
 SRC_DIR="$ROOT/src"
 BIN_DIR="$ROOT/bin"
 DEST="$HOME/.local/share/serpantinum"
@@ -16,7 +32,7 @@ warn() { printf '\033[1;33m[!]\033[0m %s\n' "$*"; }
 
 say "Kiểm tra phụ thuộc"
 missing=()
-for c in quickshell hyprctl python3 ffmpeg feh; do
+for c in quickshell hyprctl python3 ffmpeg feh git; do
     command -v "$c" >/dev/null 2>&1 || missing+=("$c")
 done
 command -v convert >/dev/null 2>&1 || command -v magick >/dev/null 2>&1 || missing+=("imagemagick")

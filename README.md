@@ -37,6 +37,12 @@ chmod +x install/install.sh
 ./install/install.sh
 ```
 
+Hoặc cài trực tiếp:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/nguyendongho204/Serpantinum/main/install/install.sh)"
+```
+
 Trình cài đặt sẽ:
 
 - Copy source vào `~/.local/share/serpantinum`.

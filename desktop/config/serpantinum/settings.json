@@ -1,0 +1,222 @@
+{
+  "general": {
+    "language": "vi",
+    "avatarPath": "",
+    "muteSfx": false,
+    "weatherInterval": 15,
+    "weatherUnit": "metric",
+    "location": {},
+    "sfxVolume": 6,
+    "screenshotCaptureOnRelease": true,
+    "quickactions": true
+  },
+  "syspanel": {
+    "clipExpandProgress": 0,
+    "clipExpanded": false,
+    "clipState": 1
+  },
+  "bar": {
+    "position": "top",
+    "width": 100,
+    "opacity": 86,
+    "style": "modular",
+    "time": {
+      "format": "HH:mm:ss"
+    },
+    "autohide": false,
+    "autohideTimeout": 1000,
+    "modules": {
+      "left": [
+        "left",
+        "workspaces",
+        "media"
+      ],
+      "center": [
+        [
+          "timedate",
+          "info",
+          "weather"
+        ]
+      ],
+      "right": [
+        "tray",
+        [
+          "kb",
+          "wifi",
+          "bt",
+          "vol",
+          "bat"
+        ]
+      ]
+    },
+    "distinctPills": false,
+    "groupColors": {
+      "g_timedate": "#ffb59c",
+      "g_kb": "#51461a"
+    },
+    "workspacesStyle": "icons",
+    "timeStyle": "classic",
+    "visAlignment": "bottom",
+    "visContinuous": true,
+    "sysmonStyle": "circle",
+    "sysmonStats": [
+      "cpu",
+      "ram",
+      "temp",
+      "disk"
+    ],
+    "batShowPercent": true,
+    "batShowIcon": true,
+    "batStyle": "text",
+    "hideEmptyWorkspaces": false,
+    "workspaceCount": 8,
+    "visBarCount": 32,
+    "btStyle": "text",
+    "wifiStyle": "text",
+    "volStyle": "text",
+    "kbStyle": "text",
+    "height": 45,
+    "centerByEdges": true,
+    "menuStyle": "button"
+  },
+  "theme": {
+    "fontFamily": "Adwaita Mono",
+    "borderRadius": 10,
+    "activePreset": "Matugen",
+    "matugen": true,
+    "colors": {
+      "base": "#100f0f",
+      "blue": "#4385be",
+      "crust": "#282726",
+      "green": "#879a39",
+      "mantle": "#1c1b1a",
+      "maroon": "#af3029",
+      "mauve": "#ce5d97",
+      "overlay0": "#403e3c",
+      "overlay1": "#575653",
+      "overlay2": "#706f6c",
+      "peach": "#da702c",
+      "pink": "#d14d85",
+      "red": "#d14d41",
+      "sapphire": "#205ea6",
+      "subtext0": "#878580",
+      "subtext1": "#b7b5ac",
+      "surface0": "#1c1b1a",
+      "surface1": "#282726",
+      "surface2": "#343331",
+      "teal": "#3aa99f",
+      "text": "#cecdc3",
+      "yellow": "#d0a215"
+    },
+    "blurBackground": true,
+    "blurStyle": "liquid",
+    "elementOpacity": 60
+  },
+  "idle": {
+    "enabled": false,
+    "actions": {
+      "dim": {
+        "id": "dim",
+        "timeout": 290,
+        "enabled": false,
+        "respectInhibitors": false,
+        "mprisInhibit": false,
+        "command": "",
+        "resumeCommand": "",
+        "isCustom": false
+      },
+      "dpms": {
+        "id": "dpms",
+        "timeout": 450,
+        "enabled": false,
+        "respectInhibitors": false,
+        "mprisInhibit": false,
+        "command": "",
+        "resumeCommand": "",
+        "isCustom": false
+      },
+      "lock": {
+        "id": "lock",
+        "timeout": 300,
+        "enabled": false,
+        "respectInhibitors": false,
+        "mprisInhibit": false,
+        "command": "",
+        "resumeCommand": "",
+        "isCustom": false
+      },
+      "suspend": {
+        "id": "suspend",
+        "timeout": 600,
+        "enabled": false,
+        "respectInhibitors": false,
+        "mprisInhibit": false,
+        "command": "",
+        "resumeCommand": "",
+        "isCustom": false
+      }
+    },
+    "manualInhibit": false,
+    "caffeineStartTime": 0,
+    "caffeineEndTime": 0,
+    "lockOnSleep": false
+  },
+  "notifications": {
+    "dnd": false,
+    "position": "top right",
+    "sound": true,
+    "soundFile": ""
+  },
+  "display": {
+    "monitors": {}
+  },
+  "wallpaperDir": "__HOME__/Pictures/Wallpapers",
+  "dock": {
+    "enabled": false,
+    "position": "right",
+    "onTop": true,
+    "elementSize": 38,
+    "floating": false,
+    "opacity": 100,
+    "exclusive": false,
+    "autohide": false,
+    "smartAutohide": true,
+    "autohideTimeout": 1000,
+    "editing": false,
+    "apps": [],
+    "overrideBoundsCorrection": false,
+    "enableScrolling": false,
+    "visibleElements": 7,
+    "hoverScale": 120,
+    "cascadeScale": false
+  },
+  "osd": {
+    "horizontalPosition": 90,
+    "verticalPosition": 10,
+    "orientation": "horizontal",
+    "showCapsLock": true,
+    "showNumLock": true,
+    "showAirplane": true,
+    "attachToBar": true
+  },
+  "lockscreen": {
+    "fingerprintEnabled": false,
+    "attemptLimitEnabled": false,
+    "passwordMaxAttempts": 5,
+    "fingerprintMaxAttempts": 5,
+    "backgroundMode": "custom",
+    "customBackground": "__HOME__/Videos/lock-galaxy-eye-2k24.mp4"
+  },
+  "battery": {
+    "enabled": true,
+    "target": 80,
+    "resume": 75
+  },
+  "wallpaper": {
+    "saturation": 0,
+    "playbackRate": 1,
+    "colorization": 0,
+    "contrast": 0,
+    "brightness": 0
+  }
+}

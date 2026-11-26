@@ -1,0 +1,5 @@
+# Gói AUR (hoặc repo CachyOS). Cài bằng yay/paru:
+#   yay -S --needed $(grep -v '^#' packages/aur.txt | tr '\n' ' ')
+quickshell
+bibata-cursor-theme
+ttf-iosevka-nerd

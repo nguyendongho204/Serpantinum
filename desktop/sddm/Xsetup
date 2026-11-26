@@ -1,0 +1,6 @@
+#!/bin/sh
+# Hiển thị poster trước khi greeter vẽ xong, giảm màn hình đen.
+POSTER=/usr/share/sddm/themes/.sddm-poster.jpg
+if [ -f "$POSTER" ]; then
+    /usr/bin/feh --no-fehbg --bg-fill "$POSTER" >/dev/null 2>&1 &
+fi

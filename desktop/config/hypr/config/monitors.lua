@@ -1,0 +1,6 @@
+-- Bố trí màn hình do Cài đặt Serpantinum ghi ra (Cài đặt -> Màn hình).
+-- Nếu để trống, Hyprland tự nhận mọi màn hình với độ phân giải ưu tiên.
+--
+-- Ví dụ đặt tay:
+-- hl.monitor({ output = "eDP-1", mode = "1920x1200@144", position = "auto", scale = 1 })
+-- hl.monitor({ output = "HDMI-A-1", mode = "1920x1080@60", position = "1920x0", scale = 1 })

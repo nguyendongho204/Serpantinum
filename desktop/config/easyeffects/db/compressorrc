@@ -1,0 +1,13 @@
+[soe][Compressor#0]
+attack=6
+inputToLink=0
+inputToSidechain=0
+knee=-14
+linkToInput=0
+linkToSidechain=0
+ratio=6
+release=320
+sidechainMode=1
+sidechainToInput=0
+sidechainToLink=0
+threshold=-36

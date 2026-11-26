@@ -1,0 +1,14 @@
+[Unit]
+Description=Touchpad 3-finger swipe volume control (continuous)
+
+[Service]
+Type=simple
+ExecStart=%h/.config/hypr/touchpad-volume.py
+Restart=on-failure
+RestartSec=2
+
+# Không gắn với graphical-session.target: session này chạy qua
+# SDDM -> start-hyprland (không uwsm) nên target đó không bao giờ kích hoạt.
+# default.target luôn active khi đăng nhập nên service tự chạy từ đầu.
+[Install]
+WantedBy=default.target

@@ -5,6 +5,21 @@ Fork giao diện **Serpantinum** dành cho Hyprland, bổ sung bộ chọn **mà
 > Dựa trên dự án gốc [Serpantinum](https://github.com/ilyamiro/serpantinum) của **ilyamiro** (AGPL-3.0).
 > Phần tuỳ biến và bảo trì bởi **damournora**.
 
+## Hai phần trong repo
+
+| Phần | Mô tả | Cài |
+| --- | --- | --- |
+| **Ứng dụng** | Thanh bar, launcher, lock screen, bảng điều khiển, tab chọn theme SDDM | `./install/install.sh` |
+| **Toàn bộ desktop** | Hyprland, terminal, font/màu, gesture, wallpaper, SDDM video, service | `./desktop/install.sh` |
+
+Muốn dựng lại **toàn bộ giao diện** như ảnh, xem [`desktop/README.md`](desktop/README.md).
+
+```bash
+git clone https://github.com/nguyendongho204/Serpantinum.git
+cd Serpantinum
+./desktop/install.sh
+```
+
 ## Tính năng thêm
 
 - Tab **Màn hình → Màn hình đăng nhập** trong Cài đặt.
@@ -72,7 +87,13 @@ Super + Shift+L  -> serpantinum lock
 
 ## Theme SDDM
 
-Repo **không kèm theme SDDM**. Cài theme vào `/usr/share/sddm/themes/`, ví dụ bộ Qylock, rồi mở tab Màn hình đăng nhập để chọn.
+Repo có sẵn theme **Qylock Winter** trong `desktop/sddm/themes/qylock-winter` (GPL-3.0, tác giả Darkkal44). Cài toàn bộ desktop sẽ tự copy theme và cấu hình SDDM:
+
+```bash
+./desktop/install.sh
+```
+
+Sau đó mở **Cài đặt → Màn hình → Màn hình đăng nhập** để chọn theme. Có thể cài thêm theme khác vào `/usr/share/sddm/themes/`.
 
 - Theme Qylock dạng symlink: xoá trong UI chỉ xoá liên kết, không xoá bộ gốc.
 - Theme video có thể đứng 2–3 giây khi greeter giải mã frame đầu; dùng theme ảnh tĩnh nếu muốn mở tức thì.

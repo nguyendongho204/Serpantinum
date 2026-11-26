@@ -1,0 +1,85 @@
+# [Hotkey]
+# Enumerate when holding modifier of Toggle key
+# EnumerateWithTriggerKeys=True
+# Consume redundant Activate/Deactivate key
+# ConsumeRedundantActivateKeys=False
+# Liệt kê phương thức nhập sau
+# EnumerateForwardKeys=
+# Liệt kê phương thức nhập liệu trước
+# EnumerateBackwardKeys=
+# Bỏ qua kiểu gõ đầu tiên trong khi liệt kê
+# EnumerateSkipFirst=False
+# Time limit in milliseconds for triggering modifier key shortcuts
+# ModifierOnlyKeyTimeout=250
+
+# [Hotkey/TriggerKeys]
+# 0=Control+space
+# 1=Zenkaku_Hankaku
+# 2=Hangul
+
+# [Hotkey/ActivateKeys]
+# 0=Hangul_Hanja
+
+# [Hotkey/DeactivateKeys]
+# 0=Hangul_Romaja
+
+# [Hotkey/AltTriggerKeys]
+# 0=Shift_L
+
+# [Hotkey/EnumerateGroupForwardKeys]
+# 0=Super+space
+
+# [Hotkey/EnumerateGroupBackwardKeys]
+# 0=Shift+Super+space
+
+# [Hotkey/PrevPage]
+# 0=Up
+
+# [Hotkey/NextPage]
+# 0=Down
+
+# [Hotkey/PrevCandidate]
+# 0=Shift+Tab
+
+# [Hotkey/NextCandidate]
+# 0=Tab
+
+# [Hotkey/TogglePreedit]
+# 0=Control+Alt+P
+
+# [Behavior]
+# Kích hoạt kiểu gõ theo mặc định
+# ActiveByDefault=False
+# Reset state on Focus In
+# resetStateWhenFocusIn=No
+# Chia Sẻ Trạng Thái Nhập
+ShareInputState=All
+# Show preedit in application
+# PreeditEnabledByDefault=True
+# Hiển thị thông tin Kiểu Gõ khi chuyển đổi Kiểu Gõ
+# ShowInputMethodInformation=True
+# Hiển thị thông tin Kiểu Gõ khi thay đổi tiêu điểm
+# showInputMethodInformationWhenFocusIn=False
+# Hiển thị thông tin kiểu gõ nhỏ gọn
+# CompactInputMethodInformation=True
+# Hiển thị thông tin kiểu gõ đầu tiên
+# ShowFirstInputMethodInformation=True
+# Default Candidates per page
+# DefaultPageSize=5
+# Override XKB Option
+# OverrideXkbOption=False
+# Custom XKB Option
+# CustomXkbOption=
+# Force Enabled Addons
+# EnabledAddons=
+# Force Disabled Addons
+# DisabledAddons=
+# Preload input method to be used by default
+# PreloadInputMethod=True
+# Cho phép phương thức nhập vào trường mật khẩu
+# AllowInputMethodForPassword=False
+# Show preedit text when typing password
+# ShowPreeditForPassword=False
+# Chu kỳ lưu dữ liệu người dùng theo phút
+# AutoSavePeriod=30
+

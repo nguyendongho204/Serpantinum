@@ -35,6 +35,7 @@ Bộ dotfiles để dựng lại **toàn bộ giao diện desktop** trong ảnh:
 - **SDDM** nếu muốn dùng theme đăng nhập video.
 - **Quickshell** (`quickshell` trên AUR; CachyOS dùng `noctalia-qs`).
 - Python 3, ffmpeg, imagemagick, feh, grim, slurp, cliphist, wl-clipboard.
+- Qt6: `qt6-declarative`, `qt6-5compat`, `qt6-multimedia`, `qt6-svg`.
 - Kitty, fish, fcitx5, btop, cava, easyeffects, fastfetch.
 - Font: `ttf-jetbrains-mono`, `ttf-iosevka-nerd`; cursor `bibata-cursor-theme`.
 

@@ -40,3 +40,6 @@ wireplumber
 xdg-desktop-portal-hyprland
 polkit
 gnome-keyring
+qt6-5compat
+qt6-multimedia
+qt6-svg

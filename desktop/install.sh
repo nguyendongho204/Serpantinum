@@ -29,7 +29,7 @@ for arg in "$@"; do
 Dùng: ./desktop/install.sh [tuỳ chọn]
 
   --no-app         Không cài/cập nhật ứng dụng Serpantinum
-  --no-sddm        Không cài theme và cấu hình SDDM (không cần sudo)
+  --no-sddm        Không cài theme và cấu hình SDDM
   --no-systemd     Không cài systemd user service
   --keep-settings  Giữ nguyên ~/.config/serpantinum/settings.json
   -h, --help       Hiện trợ giúp

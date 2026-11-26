@@ -107,7 +107,7 @@ fi
 mkdir -p "$WALLPAPER_DIR" "$HOME/Videos" "$HOME/.local/bin"
 for wp in "$ROOT"/wallpapers/*.jpg; do
     [ -e "$wp" ] || continue
-    install_file "$wp" "$WALLPAPER_DIR/serpantinum-wallpaper.jpg"
+    install_file "$wp" "$WALLPAPER_DIR/$(basename "$wp")"
 done
 if [ -f "$ROOT/wallpapers/lock-galaxy-eye-2k24.mp4" ]; then
     install_file "$ROOT/wallpapers/lock-galaxy-eye-2k24.mp4" "$LOCK_VIDEO"

@@ -2,7 +2,7 @@
 
 Bộ dotfiles để dựng lại **toàn bộ giao diện desktop** trong ảnh: Hyprland, thanh trạng thái/Serpantinum, terminal, font, màu, gesture touchpad, wallpaper và màn hình đăng nhập SDDM dạng video.
 
-![Wallpaper](wallpapers/pin-709105903833812346-4k.jpg)
+![Wallpaper](wallpapers/serpantinum-wallpaper.jpg)
 
 > Đây là phần **giao diện hệ thống**, tách khỏi ứng dụng Serpantinum.
 > Ứng dụng nằm ở thư mục gốc repo và được cài tự động bởi `desktop/install.sh`.
